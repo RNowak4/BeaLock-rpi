@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -15,7 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @SpringBootApplication
-//@EnableScheduling
+@EnableScheduling
 public class BealockRpiApplication {
     private final static String KEYSTORE_LOCATION = "/home/radek/keys/client.jks";
     private final static String KEYSTORE_PASSWORD = "s3cr3t";
@@ -56,15 +57,8 @@ public class BealockRpiApplication {
 
     @PreDestroy
     public void deregisterServer() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer";
-        map.add("ip", "localhost");
-        map.add("port", "9095");
-        final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-
-        template().delete(URL, request);
+        final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer/localhost/9095";
+        template().delete(URL);
     }
 
     public static void main(String[] args) {

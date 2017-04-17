@@ -1,11 +1,11 @@
 package com.wpam.utils;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 
-@Component
-public class BluetoothComponent {
+@Service
+public class BluetoothService {
 
     public void checkIfInArea(HashSet<String> registeredBeacons) {
         // TODO...
