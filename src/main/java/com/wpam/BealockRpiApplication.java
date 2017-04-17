@@ -1,16 +1,30 @@
 package com.wpam;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
 public class BealockRpiApplication {
-    private final static String KEYSTORE_LOCATION = "/home/pi/keys/client.jks";
+    private final static String KEYSTORE_LOCATION = "/home/radek/keys/client.jks";
     private final static String KEYSTORE_PASSWORD = "s3cr3t";
+
+    @Value("${main.server.ip}")
+    private String mainServerIp;
+
+    @Value("${main.server.port}")
+    private String mainServerPort;
 
     static {
         System.setProperty("javax.net.ssl.trustStore", KEYSTORE_LOCATION);
@@ -25,6 +39,32 @@ public class BealockRpiApplication {
     @Bean
     public RestTemplate template() throws Exception {
         return new RestTemplate();
+    }
+
+    @PostConstruct
+    public void registerServer() throws Exception {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer";
+        map.add("ip", "localhost");
+        map.add("port", "9095");
+        final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        template().postForEntity(URL, request, Void.class);
+    }
+
+    @PreDestroy
+    public void deregisterServer() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer";
+        map.add("ip", "localhost");
+        map.add("port", "9095");
+        final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        template().delete(URL, request);
     }
 
     public static void main(String[] args) {
