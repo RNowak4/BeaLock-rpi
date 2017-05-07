@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+@RestController(value = "/test")
 public class TestController {
     private RestTemplate template;
 
@@ -15,7 +18,12 @@ public class TestController {
         this.template = template;
     }
 
-    @Scheduled(fixedRate = 500)
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public String testa() {
+        return "test OK!";
+    }
+
+    @Scheduled(fixedRate = 5000)
     public void test() {
         final ResponseEntity<String> result = template.getForEntity("https://localhost:9090/test", String.class);
 
