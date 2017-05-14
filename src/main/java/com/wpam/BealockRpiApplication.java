@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
 public class BealockRpiApplication {
     private final static String KEYSTORE_LOCATION = "/home/radek/keys/client.jks";
     private final static String KEYSTORE_PASSWORD = "s3cr3t";

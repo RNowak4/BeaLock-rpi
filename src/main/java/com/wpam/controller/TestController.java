@@ -2,8 +2,6 @@ package com.wpam.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +21,7 @@ public class TestController {
         return "test OK!";
     }
 
-    @Scheduled(fixedRate = 5000)
+    //    @Scheduled(fixedRate = 10000)
     public void test() {
         final ResponseEntity<String> result = template.getForEntity("https://localhost:9090/test", String.class);
 
