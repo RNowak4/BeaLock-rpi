@@ -1,5 +1,7 @@
 package com.wpam.utils;
 
+import com.wpam.service.MainServerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -9,10 +11,16 @@ import java.util.HashSet;
 
 @Service
 public class BluetoothService {
+    private MainServerService mainServerService;
     private Runtime runtime = Runtime.getRuntime();
     private final static String SET_BLUETOOTH_DOWN = "sudo hciconfig hci0 down";
     private final static String SET_BLUETOOTH_UP = "sudo hciconfig hci0 up";
     private final static String SCAN_FOR_BEACONS = "sudo timeout -sHUP 3s hcitool -i hci0 lescan";
+
+    @Autowired
+    public BluetoothService(MainServerService mainServerService) {
+        this.mainServerService = mainServerService;
+    }
 
     public void checkIfInArea(HashSet<String> registeredBeacons) {
         try {
@@ -38,6 +46,11 @@ public class BluetoothService {
             }
             reader.close();
             System.out.println(executeCommand(""));
+
+            // TODO iteracja po registeredBeacons. I jak nie ma jakiegos to notify
+            if (false) {
+                mainServerService.sendStolenAlarm("sample");
+            }
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

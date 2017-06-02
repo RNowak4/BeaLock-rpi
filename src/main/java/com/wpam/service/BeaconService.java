@@ -35,7 +35,7 @@ public class BeaconService {
         registeredBeacons.remove(beaconName);
     }
 
-    @Scheduled(fixedRate = 4000)
+//    @Scheduled(fixedRate = 4000)
     public synchronized void checkIfBeaconsInArea() {
         bluetoothService.checkIfInArea(registeredBeacons);
     }

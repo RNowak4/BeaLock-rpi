@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -15,9 +16,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @SpringBootApplication
-//@EnableScheduling
+@EnableScheduling
 public class BealockRpiApplication {
-    private final static String KEYSTORE_LOCATION = "/home/radek/keys/client.jks";
+    private final static String KEYSTORE_LOCATION = "C:/Osobiste/keys/client.jks";
     private final static String KEYSTORE_PASSWORD = "s3cr3t";
 
     @Value("${main.server.ip}")
@@ -25,6 +26,12 @@ public class BealockRpiApplication {
 
     @Value("${main.server.port}")
     private String mainServerPort;
+
+    @Value("${raspberry.ip}")
+    private String raspberryIp;
+
+    @Value("${server.port}")
+    private String raspberryPort;
 
     static {
         System.setProperty("javax.net.ssl.trustStore", KEYSTORE_LOCATION);
@@ -47,8 +54,8 @@ public class BealockRpiApplication {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer";
-        map.add("ip", "localhost");
-        map.add("port", "9095");
+        map.add("ip", raspberryIp);
+        map.add("port", raspberryPort);
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
         template().postForEntity(URL, request, Void.class);
@@ -56,7 +63,9 @@ public class BealockRpiApplication {
 
     @PreDestroy
     public void deregisterServer() throws Exception {
-        final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer/localhost/9095";
+        final String URL = "https://" + mainServerIp + ":" + mainServerPort + "/childServer/"
+                + raspberryIp + "/" + raspberryPort;
+
         template().delete(URL);
     }
 
